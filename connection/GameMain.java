@@ -170,6 +170,22 @@ public class GameMain extends JPanel {
         // Tampilkan dialog pop-up
         if (!message.isEmpty()) {
             JOptionPane.showMessageDialog(this, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
+
+            // Pilihan: Play Again, Back to Main Menu, Quit
+            Object[] options = { "Play Again", "Back to Main Menu", "Quit" };
+            int choice = JOptionPane.showOptionDialog(this,
+                "What would you like to do?", "Game Options",
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]);
+    
+            // Handle pilihan pemain
+            if (choice == JOptionPane.YES_OPTION) {
+                newGame(); // Mulai game baru
+            } else if (choice == JOptionPane.NO_OPTION) {
+                returnToMainMenu(); // Kembali ke menu utama
+            } else if (choice == JOptionPane.CANCEL_OPTION || choice == JOptionPane.CLOSED_OPTION) {
+                System.exit(0); // Keluar dari aplikasi
+            }
         }
     
         repaint(); // Refresh display to show updated score
@@ -199,6 +215,14 @@ public class GameMain extends JPanel {
     
         // Set AI's seed
         aiPlayer.setSeed(humanSeed == Seed.CROSS ? Seed.NOUGHT : Seed.CROSS);
+    }
+    private void returnToMainMenu() {
+        // Restart the main game menu
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+        frame.setContentPane(new GameMain()); // Replace the current panel with a new GameMain
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     /** The entry "main" method */
