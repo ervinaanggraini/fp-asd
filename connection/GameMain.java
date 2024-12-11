@@ -29,6 +29,7 @@ public class GameMain extends JPanel {
     private int oWins = 0;   // Skor untuk O
     private int draws = 0;   // Skor untuk Draw
     private int difficultyLevel;
+    private Timer aiTimer; // Timer for AI delay
 
 
     /** Constructor to setup the UI and game components */
@@ -97,7 +98,14 @@ public class GameMain extends JPanel {
                         } else {
                             // Switch to AI if game is still ongoing
                             currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
-                            aiMove();
+                            aiTimer = new Timer(500, new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                    aiMove(); // Call AI's move after delay
+                                }
+                            });
+                            aiTimer.setRepeats(false);  // Only run once
+                            aiTimer.start();
                         }
                     }
                 } else {
