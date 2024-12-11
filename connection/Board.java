@@ -1,6 +1,5 @@
 import java.awt.*;
-import javax.imageio.ImageIO;
-import java.io.File;
+
 /**
  * The Board class models the ROWS-by-COLS game board.
  */
