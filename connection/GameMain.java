@@ -25,8 +25,9 @@ public class GameMain extends JPanel {
     private JLabel statusBar;    // for displaying status message
     private AIPlayer aiPlayer;   // AI player object
     private int xWins = 0;   // Skor untuk X
-   private int oWins = 0;   // Skor untuk O
-   private int draws = 0;   // Skor untuk Draw
+    private int oWins = 0;   // Skor untuk O
+    private int draws = 0;   // Skor untuk Draw
+    private int difficultyLevel;
 
 
     /** Constructor to setup the UI and game components */
@@ -44,9 +45,14 @@ public class GameMain extends JPanel {
         } else {
             humanSeed = Seed.NOUGHT;
         }
-
+        Object[] difficultyOptions = { "Easy", "Medium", "Hard" };
+        difficultyLevel = JOptionPane.showOptionDialog(null,
+            "Select Difficulty Level", "Difficulty",
+            JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
+            null, difficultyOptions, difficultyOptions[0]);
         // Initialize the game board and AI player
         initGame();
+        setAIPlayer();
 
         // Initialize AI player with the opposite seed
         aiPlayer = new AIPlayerMinimax(board);
@@ -149,16 +155,24 @@ public class GameMain extends JPanel {
     }
     
     private void updateScore() {
+        String message = "";
         if (currentState == State.CROSS_WON) {
             xWins++;
-            System.out.println(xWins); // Skor X bertambah
+            message = "X Wins!";
         } else if (currentState == State.NOUGHT_WON) {
-            oWins++;  // Skor O (AI) bertambah
-            System.out.println(oWins);
+            oWins++;
+            message = "O Wins!";
         } else if (currentState == State.DRAW) {
-            draws++;  // Skor Draw bertambah
-            System.out.println(draws);
+            draws++;
+            message = "It's a Draw!";
         }
+    
+        // Tampilkan dialog pop-up
+        if (!message.isEmpty()) {
+            JOptionPane.showMessageDialog(this, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
+        }
+    
+        repaint(); // Refresh display to show updated score
     }
 
     /** Custom painting codes on this JPanel */
@@ -172,7 +186,20 @@ public class GameMain extends JPanel {
         String statusMessage = "X " + xWins + " | Draw " + draws + " | O " + oWins;
         statusBar.setText(statusMessage);  // Display the score in the status bar
     }
+    private void setAIPlayer() {
+        if (difficultyLevel == 0) { // Easy
+            aiPlayer = new AIPlayerTableLookup(board); // Simple AI
+        } else if (difficultyLevel == 1) { // Medium
+            aiPlayer = new AIPlayerMinimax(board); // Minimax with limited depth
+            ((AIPlayerMinimax) aiPlayer).setMaxDepth(2); // Set depth to 2 for medium difficulty
+        } else if (difficultyLevel == 2) { // Hard
+            aiPlayer = new AIPlayerMinimax(board); // Minimax with full depth
+            ((AIPlayerMinimax) aiPlayer).setMaxDepth(Integer.MAX_VALUE); // Unlimited depth
+        }
     
+        // Set AI's seed
+        aiPlayer.setSeed(humanSeed == Seed.CROSS ? Seed.NOUGHT : Seed.CROSS);
+    }
 
     /** The entry "main" method */
     public static void main(String[] args) {
@@ -188,5 +215,6 @@ public class GameMain extends JPanel {
                 frame.setVisible(true);            // show it
             }
         });
+        
     }
 }

@@ -1,6 +1,7 @@
 import java.util.*;
 
 public class AIPlayerMinimax extends AIPlayer {
+    private int maxDepth = Integer.MAX_VALUE;
 
     public AIPlayerMinimax(Board board) {
         super(board);
@@ -8,8 +9,8 @@ public class AIPlayerMinimax extends AIPlayer {
 
     @Override
     int[] move() {
-        int[] result = minimax(2, mySeed, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        return new int[] {result[1], result[2]};   // Return row, col
+    int[] result = minimax(maxDepth, mySeed, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    return new int[] {result[1], result[2]};   // Return row, col
     }
 
     private int[] minimax(int depth, Seed player, int alpha, int beta) {
@@ -82,5 +83,8 @@ public class AIPlayerMinimax extends AIPlayer {
             return true;
         }
         return false;
+    }
+    public void setMaxDepth(int maxDepth) {
+        this.maxDepth = maxDepth;
     }
 }
