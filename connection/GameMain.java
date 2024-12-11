@@ -15,7 +15,8 @@ public class GameMain extends JPanel {
     public static final Color COLOR_BG_STATUS = new Color(216, 216, 216);
     public static final Color COLOR_CROSS = new Color(239, 105, 80);  // Red #EF6950
     public static final Color COLOR_NOUGHT = new Color(64, 154, 225); // Blue #409AE1
-    public static final Font FONT_STATUS = new Font("Poppins", Font.PLAIN, 14);
+    public static final Font FONT_DEFAULT = new Font("OCR A Extended", Font.PLAIN, 14);  // Ganti "Poppins" dengan font pilihan Anda
+
 
     // Define game objects
     private Board board;         // the game board
@@ -34,10 +35,19 @@ public class GameMain extends JPanel {
     public GameMain() {
         // Ask the player to choose between "X" or "O" at the start of the game
         Object[] options = { "X", "O" };
-        int choice = JOptionPane.showOptionDialog(null,
-            "Choose your symbol", "Player Choice",
-            JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
+        JLabel label = new JLabel("Choose your symbol", JLabel.CENTER);
+        label.setFont(FONT_DEFAULT);  // Set font baru
+        
+        // Membuat panel untuk menampung label dengan font yang disesuaikan
+        JPanel panel = new JPanel();
+        panel.add(label);
+
+        // Menampilkan dialog menggunakan panel kustom
+        int choice = JOptionPane.showOptionDialog(null, panel,
+            "Player Choice", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
             null, options, options[0]);
+            
+
 
         // Set the human player's seed and initialize the AI player accordingly
         if (choice == 0) {
@@ -46,10 +56,18 @@ public class GameMain extends JPanel {
             humanSeed = Seed.NOUGHT;
         }
         Object[] difficultyOptions = { "Easy", "Medium", "Hard" };
+        JLabel difficultyLabel = new JLabel("Select Difficulty Level", JLabel.CENTER);
+        difficultyLabel.setFont(FONT_DEFAULT);  // Set font baru
+        
+        // Membuat panel untuk menampung label
+        JPanel difficultyPanel = new JPanel();
+        difficultyPanel.setLayout(new BorderLayout());
+        difficultyPanel.add(difficultyLabel, BorderLayout.CENTER);
+
+        // Menampilkan dialog pilihan dengan font yang disesuaikan
         difficultyLevel = JOptionPane.showOptionDialog(null,
-            "Select Difficulty Level", "Difficulty",
-            JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
-            null, difficultyOptions, difficultyOptions[0]);
+            difficultyPanel, "Difficulty", JOptionPane.DEFAULT_OPTION,
+            JOptionPane.INFORMATION_MESSAGE, null, difficultyOptions, difficultyOptions[0]);
         // Initialize the game board and AI player
         initGame();
         setAIPlayer();
@@ -93,7 +111,7 @@ public class GameMain extends JPanel {
 
         // Setup the status bar (JLabel) to display status message
         statusBar = new JLabel();
-        statusBar.setFont(FONT_STATUS);
+        statusBar.setFont(FONT_DEFAULT);
         statusBar.setBackground(COLOR_BG_STATUS);
         statusBar.setOpaque(true);
         statusBar.setPreferredSize(new Dimension(300, 30));
@@ -166,6 +184,8 @@ public class GameMain extends JPanel {
             draws++;
             message = "It's a Draw!";
         }
+        UIManager.put("OptionPane.messageFont", new Font("OCR A Extended", Font.PLAIN, 18));
+        UIManager.put("OptionPane.buttonFont", new Font("OCR A Extended", Font.PLAIN, 16));
     
         // Tampilkan dialog pop-up
         if (!message.isEmpty()) {
@@ -199,8 +219,9 @@ public class GameMain extends JPanel {
         board.paint(g);  // Ask the game board to paint itself
     
         // Print status-bar message with the score
-        String statusMessage = "X " + xWins + " | Draw " + draws + " | O " + oWins;
+        String statusMessage = "X = " + xWins + " | Draw = " + draws + " | O = " + oWins;
         statusBar.setText(statusMessage);  // Display the score in the status bar
+        statusBar.setHorizontalAlignment(SwingConstants.CENTER);
     }
     private void setAIPlayer() {
         if (difficultyLevel == 0) { // Easy
