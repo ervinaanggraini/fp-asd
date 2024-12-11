@@ -55,38 +55,35 @@ public class GameMain extends JPanel {
         // This JPanel fires MouseEvent
         super.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent e) {  // mouse-clicked handler
+            public void mouseClicked(MouseEvent e) {
                 int mouseX = e.getX();
                 int mouseY = e.getY();
-                // Get the row and column clicked
                 int row = mouseY / Cell.SIZE;
                 int col = mouseX / Cell.SIZE;
-
+            
                 if (currentState == State.PLAYING) {
-                  // Check if clicked position is valid and the cell is empty
-                  if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
-                      && board.cells[row][col].content == Seed.NO_SEED) {
-                      // Player makes a move
-                      currentState = board.stepGame(currentPlayer, row, col);
-          
-                      // Switch to the next player if the game is still in progress
-                      if (currentState == State.PLAYING) {
-                          currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
-          
-                          // AI will play only if game is still ongoing
-                          if (currentState == State.PLAYING) {
-                              // Call aiMove() to make AI move after human player's move
-                              aiMove();
-                          }
-                      }
-                  }
-                } else {        // game over
-                    newGame();  // restart the game
+                    if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
+                        && board.cells[row][col].content == Seed.NO_SEED) {
+                        // Player makes a move
+                        currentState = board.stepGame(currentPlayer, row, col);
+            
+                        // Check if game has ended
+                        if (currentState != State.PLAYING) {
+                            updateScore(); // Update the score after the game ends
+                        } else {
+                            // Switch to AI if game is still ongoing
+                            currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+                            aiMove();
+                        }
+                    }
+                } else {
+                    newGame(); // Restart the game
                 }
-                // Refresh the drawing canvas
-                repaint();  // Callback paintComponent().
+            
+                repaint(); // Refresh the drawing canvas
             }
         });
+
 
         // Setup the status bar (JLabel) to display status message
         statusBar = new JLabel();
@@ -128,37 +125,41 @@ public class GameMain extends JPanel {
 
     /** Method for AI to automatically make a move */
     public void aiMove() {
-      if (currentState == State.PLAYING) {
-          // Get the AI's move
-          int[] aiMove = aiPlayer.move();
-          int aiRow = aiMove[0];
-          int aiCol = aiMove[1];
-  
-          // Update the game board with the AI's move
-          currentState = board.stepGame(currentPlayer, aiRow, aiCol);
-  
-          // If the game is over, update the score
-          if (currentState != State.PLAYING) {
-              updateScore();
-          }
-  
-          // Switch player after AI's move
-          if (currentState == State.PLAYING) {
-              currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
-          }
-      }
-  
-      repaint();  // Callback paintComponent().
-  }
-  private void updateScore() {
-      if (currentState == State.CROSS_WON) {
-       xWins++;
-       } else if (currentState == State.NOUGHT_WON) {
-       oWins++;
-      } else if (currentState == State.DRAW) {
-       draws++;
-      }
-   }
+        if (currentState == State.PLAYING) {
+            // Get the AI's move
+            int[] aiMove = aiPlayer.move();
+            int aiRow = aiMove[0];
+            int aiCol = aiMove[1];
+    
+            // Update the game board with the AI's move
+            currentState = board.stepGame(currentPlayer, aiRow, aiCol);
+    
+            // If the game is over, update the score
+            if (currentState != State.PLAYING) {
+                updateScore();  // Call to update score after the game ends
+            }
+    
+            // Switch player after AI's move
+            if (currentState == State.PLAYING) {
+                currentPlayer = (currentPlayer == Seed.CROSS) ? Seed.NOUGHT : Seed.CROSS;
+            }
+        }
+    
+        repaint();  // Callback paintComponent().
+    }
+    
+    private void updateScore() {
+        if (currentState == State.CROSS_WON) {
+            xWins++;
+            System.out.println(xWins); // Skor X bertambah
+        } else if (currentState == State.NOUGHT_WON) {
+            oWins++;  // Skor O (AI) bertambah
+            System.out.println(oWins);
+        } else if (currentState == State.DRAW) {
+            draws++;  // Skor Draw bertambah
+            System.out.println(draws);
+        }
+    }
 
     /** Custom painting codes on this JPanel */
     @Override
