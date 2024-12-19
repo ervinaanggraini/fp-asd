@@ -2,6 +2,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import audio.SoundEffect;
+
 /**
  * Tic-Tac-Toe: Two-player Graphic version with better OO design.
  * The Board and Cell classes are separated in their own classes.
@@ -85,13 +87,16 @@ public class GameMain extends JPanel {
                 int mouseY = e.getY();
                 int row = mouseY / Cell.SIZE;
                 int col = mouseX / Cell.SIZE;
-            
+                
+
                 if (currentState == State.PLAYING) {
                     if (row >= 0 && row < Board.ROWS && col >= 0 && col < Board.COLS
                         && board.cells[row][col].content == Seed.NO_SEED) {
                         // Player makes a move
                         currentState = board.stepGame(currentPlayer, row, col);
-            
+                            
+                        SoundEffect.CLICKED.play();
+                
                         // Check if game has ended
                         if (currentState != State.PLAYING) {
                             updateScore(); // Update the score after the game ends
@@ -132,12 +137,16 @@ public class GameMain extends JPanel {
         super.setBorder(BorderFactory.createLineBorder(COLOR_BG_STATUS, 2, false));
 
         // Now that everything is initialized, start a new game
+        SoundEffect.playBacksound();
         newGame();
     }
 
     /** Initialize the game (run once) */
     public void initGame() {
-        board = new Board();  // allocate the game-board
+        board = new Board();
+        currentState = State.PLAYING; // Set status permainan ke playing
+        currentPlayer = humanSeed; // Tentukan pemain manusia yang pertama kali bergerak
+        repaint(); // Refresh tampilan
     }
 
     /** Reset the game-board contents and the current-state, ready for new game */
@@ -185,12 +194,15 @@ public class GameMain extends JPanel {
         if (currentState == State.CROSS_WON) {
             xWins++;
             message = "X Wins!";
+            SoundEffect.WIN.play();
         } else if (currentState == State.NOUGHT_WON) {
             oWins++;
             message = "O Wins!";
+            SoundEffect.WIN.play();
         } else if (currentState == State.DRAW) {
             draws++;
             message = "It's a Draw!";
+            SoundEffect.DRAW.play();
         }
         UIManager.put("OptionPane.messageFont", new Font("OCR A Extended", Font.PLAIN, 18));
         UIManager.put("OptionPane.buttonFont", new Font("OCR A Extended", Font.PLAIN, 16));
