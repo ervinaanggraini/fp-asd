@@ -191,22 +191,39 @@ public class GameMain extends JPanel {
     
     private void updateScore() {
         String message = "";
+        boolean playerLost = false;
+
         if (currentState == State.CROSS_WON) {
-            xWins++;
-            message = "X Wins!";
-            SoundEffect.WIN.play();
+            if (humanSeed == Seed.CROSS) {
+                xWins++;
+                message = "X Wins! You Win!";
+                SoundEffect.playWinSound();
+            } else {
+                oWins++;
+                message = "X Wins! You Lose!";
+                playerLost = true;
+                SoundEffect.playLoseSound();
+            }
         } else if (currentState == State.NOUGHT_WON) {
-            oWins++;
-            message = "O Wins!";
-            SoundEffect.WIN.play();
+            if (humanSeed == Seed.NOUGHT) {
+                oWins++;
+                message = "O Wins! You Win!";
+                SoundEffect.playWinSound();
+            } else {
+                xWins++;
+                message = "O Wins! You Lose!";
+                playerLost = true;
+                SoundEffect.playLoseSound();
+            }
         } else if (currentState == State.DRAW) {
             draws++;
             message = "It's a Draw!";
             SoundEffect.DRAW.play();
         }
+
         UIManager.put("OptionPane.messageFont", new Font("OCR A Extended", Font.PLAIN, 18));
         UIManager.put("OptionPane.buttonFont", new Font("OCR A Extended", Font.PLAIN, 16));
-    
+
         // Tampilkan dialog pop-up
         if (!message.isEmpty()) {
             JOptionPane.showMessageDialog(this, message, "Game Over", JOptionPane.INFORMATION_MESSAGE);
@@ -217,7 +234,7 @@ public class GameMain extends JPanel {
                 "What would you like to do?", "Game Options",
                 JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
                 null, options, options[0]);
-    
+
             // Handle pilihan pemain
             if (choice == JOptionPane.YES_OPTION) {
                 newGame(); // Mulai game baru
@@ -227,7 +244,11 @@ public class GameMain extends JPanel {
                 System.exit(0); // Keluar dari aplikasi
             }
         }
-    
+
+        if (playerLost) {
+            System.out.println("Better luck next time!"); // Bisa diganti dengan aksi tambahan
+        }
+
         repaint(); // Refresh display to show updated score
     }
 
